@@ -1,0 +1,100 @@
+# Install and load necessary packages
+install.packages("readxl")
+install.packages("dplyr")
+install.packages("ggplot2")
+library(readxl)
+library(dplyr)
+library(ggplot2)
+
+# Load the Excel file
+file_path <- "path_to_your_file/vasu mini pro.xlsx"
+data <- read_excel(file_path, sheet = "Sheet1")
+
+# Inspect the data
+str(data)
+head(data)
+
+# Brand Analysis: Average Prices of Laptops by Different Brands
+brand_avg_price <- data %>%
+    group_by(Company) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by Brand
+ggplot(brand_avg_price, aes(x = reorder(Company, avg_price), y = avg_price)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = "Average Prices by Brand", x = "Brand", y = "Average Price (Euros)")
+
+# Type Analysis: Average Prices by Laptop Type
+type_avg_price <- data %>%
+    group_by(TypeName) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by Type
+ggplot(type_avg_price, aes(x = reorder(TypeName, avg_price), y = avg_price)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = "Average Prices by Laptop Type", x = "Type", y = "Average Price (Euros)")
+
+# RAM Analysis: Impact of RAM Size on Price
+data <- data %>%
+    mutate(Ram_GB = as.numeric(gsub("GB", "", Ram)))
+
+ram_avg_price <- data %>%
+    group_by(Ram_GB) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by RAM Size
+ggplot(ram_avg_price, aes(x = Ram_GB, y = avg_price)) +
+    geom_bar(stat = "identity") +
+    labs(title = "Average Prices by RAM Size", x = "RAM (GB)", y = "Average Price (Euros)")
+
+# CPU Analysis: Impact of CPU Brand on Price
+data <- data %>%
+    mutate(Cpu_Brand = sub(" .*", "", Cpu))
+
+cpu_avg_price <- data %>%
+    group_by(Cpu_Brand) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by CPU Brand
+ggplot(cpu_avg_price, aes(x = reorder(Cpu_Brand, avg_price), y = avg_price)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = "Average Prices by CPU Brand", x = "CPU Brand", y = "Average Price (Euros)")
+
+# Screen Resolution Analysis: Impact on Price
+screen_res_avg_price <- data %>%
+    group_by(ScreenResolution) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by Screen Resolution
+ggplot(screen_res_avg_price, aes(x = reorder(ScreenResolution, avg_price), y = avg_price)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = "Average Prices by Screen Resolution", x = "Screen Resolution", y = "Average Price (Euros)")
+
+# Operating System Analysis: Impact on Price
+os_avg_price <- data %>%
+    group_by(OpSys) %>%
+    summarize(avg_price = mean(Price_euros, na.rm = TRUE)) %>%
+    arrange(desc(avg_price))
+
+# Plot: Average Prices by Operating System
+ggplot(os_avg_price, aes(x = reorder(OpSys, avg_price), y = avg_price)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = "Average Prices by Operating System", x = "Operating System", y = "Average Price (Euros)")
+
+# Save the plots to files
+ggsave("brand_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
+ggsave("type_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
+ggsave("ram_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
+ggsave("cpu_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
+ggsave("screen_res_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
+ggsave("os_avg_price_plot.png", plot = last_plot(), width = 8, height = 6)
